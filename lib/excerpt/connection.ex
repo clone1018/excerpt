@@ -37,6 +37,7 @@ defmodule Excerpt.Connection do
     state = Map.merge(state, params)
 
     Logger.info("New user connecting #{inspect(params)}")
+    Registry.register(Excerpt.Users, state[:username], self())
 
     {:reply, Replies.welcome(state[:username]), state}
   end
