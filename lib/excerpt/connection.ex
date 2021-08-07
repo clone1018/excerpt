@@ -27,9 +27,9 @@ defmodule Excerpt.Connection do
   end
 
   # IRC Commands
-  def handle_command({:nick, %{username: username}}, state) do
+  def handle_command({:nick, %{nickname: nickname}}, state) do
     # This does not register the user yet, as we're awaiting a USER command
-    {:noreply, Map.put(state, :username, username)}
+    {:noreply, Map.put(state, :nickname, nickname)}
   end
 
   def handle_command({:user, params}, state) do
@@ -37,9 +37,9 @@ defmodule Excerpt.Connection do
     state = Map.merge(state, params)
 
     Logger.info("New user connecting #{inspect(params)}")
-    Registry.register(Excerpt.Users, state[:username], self())
+    Registry.register(Excerpt.Users, state[:nickname], self())
 
-    {:reply, Replies.welcome(state[:username]), state}
+    {:reply, Replies.welcome(state[:nickname]), state}
   end
 
   def handle_command({:ping, _}, state) do
@@ -97,7 +97,7 @@ defmodule Excerpt.Connection do
     data = data <> "\r\n"
 
     Logger.debug("-> #{inspect(data)}")
-    :gen_tcp.send(socket, data <> "\r\n")
+    :gen_tcp.send(socket, data)
 
     {:noreply, state}
   end

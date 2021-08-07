@@ -1,27 +1,15 @@
 defmodule Excerpt.ConnectionTest do
   use ExUnit.Case
 
-  setup do
-    Application.stop(:excerpt)
-    :ok = Application.start(:excerpt)
-  end
+  use Excerpt.IRCCase
 
-  setup do
-    opts = [:binary, packet: :line, active: false]
-    {:ok, socket} = :gen_tcp.connect('localhost', 6667, opts)
-    %{socket: socket}
-  end
+  test "welcome message is sent on proper connect", %{socket: socket} do
+    send_command(socket, "NICK Wiz")
+    send_command(socket, "USER guest tolmoon tolsun :Ronnie Reagan")
 
-  test "server interaction", %{socket: socket} do
-    :gen_tcp.send(socket, "NICK Wiz\r\n")
-
-    assert send_and_recv(socket, "USER guest tolmoon tolsun :Ronnie Reagan\r\n") ==
-             ":localhost 001 guest :Welcome to the Excerpt\r\n"
-  end
-
-  defp send_and_recv(socket, command) do
-    :ok = :gen_tcp.send(socket, command)
-    {:ok, data} = :gen_tcp.recv(socket, 0, 1000)
-    data
+    assert_msg(socket, ":localhost 001 Wiz :Welcome to the Excerpt")
+    assert_msg(socket, ":localhost 002 Wiz :Your host is localhost, running version 0.1.0")
+    assert_msg(socket, ":localhost 003 Wiz :This server was created 2021-08-06")
+    assert_msg(socket, ":localhost 004 Wiz excerpt 0.1.0 oiv r")
   end
 end

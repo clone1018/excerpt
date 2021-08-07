@@ -11,11 +11,11 @@ defmodule Excerpt.IRC.CommandParser do
 
   def parse("NICK" <> _ = msg) do
     case String.split(msg) do
-      ["NICK", username] ->
-        {:nick, %{username: username}}
+      ["NICK", nickname] ->
+        {:nick, %{nickname: nickname}}
 
-      ["NICK", username, hopcount] ->
-        {:nick, %{username: username, hopcount: hopcount}}
+      ["NICK", nickname, hopcount] ->
+        {:nick, %{nickname: nickname, hopcount: hopcount}}
 
       _ ->
         {:error, "Unable to parse Nick command"}

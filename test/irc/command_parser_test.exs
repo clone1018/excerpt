@@ -7,7 +7,7 @@ defmodule Excerpt.IRC.CommandParserTest do
   test "parses regular messages" do
     assert parse("PASS secretpasswordhere") == {:pass, %{password: "secretpasswordhere"}}
 
-    assert parse("NICK Wiz") == {:nick, %{username: "Wiz"}}
+    assert parse("NICK Wiz") == {:nick, %{nickname: "Wiz"}}
 
     assert parse("USER guest tolmoon tolsun :Ronnie Reagan") ==
              {:user,
