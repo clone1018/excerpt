@@ -18,4 +18,9 @@ defmodule Excerpt.IRC.CommandParserTest do
                 realname: "Ronnie Reagan"
               }}
   end
+
+  test "parses ping messages" do
+    assert parse("PING server1") == {:ping, %{servers: ["server1"]}}
+    assert parse("PING server1 server2") == {:ping, %{servers: ["server1", "server2"]}}
+  end
 end

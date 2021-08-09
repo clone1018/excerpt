@@ -5,46 +5,11 @@ defmodule Excerpt.IRC.CommandParser do
     {:list_capabilities, %{}}
   end
 
-  def parse("PASS " <> password) do
-    {:pass, %{password: password}}
-  end
-
-  def parse("NICK" <> _ = msg) do
-    case String.split(msg) do
-      ["NICK", nickname] ->
-        {:nick, %{nickname: nickname}}
-
-      ["NICK", nickname, hopcount] ->
-        {:nick, %{nickname: nickname, hopcount: hopcount}}
-
-      _ ->
-        {:error, "Unable to parse Nick command"}
-    end
-  end
-
-  def parse("USER" <> _ = msg) do
-    [msg, realname] = String.split(msg, ":")
-    ["USER", username, hostname, servername] = String.split(msg)
-
-    {:user, %{username: username, hostname: hostname, servername: servername, realname: realname}}
-  end
-
-  def parse("PING" <> _ = msg) do
-    case String.split(msg) do
-      ["PING", server1] ->
-        {:ping, %{servers: [server1]}}
-
-      ["PING", server1, server2] ->
-        {:ping, %{servers: [server1, server2]}}
-
-      _ ->
-        {:error, "Unexpected ping command"}
-    end
-  end
-
-  def parse("QUIT" <> _) do
-    {:quit, %{}}
-  end
+  # The commands are grouped in their own module by RFC category
+  use Excerpt.IRC.Commands.ConnectionRegistration
+  use Excerpt.IRC.Commands.ChannelOperations
+  use Excerpt.IRC.Commands.ServerOperations
+  use Excerpt.IRC.Commands.MiscOperations
 
   def parse(command) do
     {:error, "Unrecognized command: #{inspect(command)}"}
